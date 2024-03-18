@@ -1,4 +1,5 @@
 import RPi.GPIO as gpio
+import sounddevice
 import time
 import argparse
 import sys
@@ -13,12 +14,10 @@ if args.just_version:
     sys.exit(2)
 
 def mainloop():
-    print(gpio.input(4))
     if gpio.input(4) == gpio.HIGH:
-        print("motion detected!")
-        while gpio.input(4) == gpio.HIGH:
-            time.sleep(0.1)
-        print("motion stopped!")
+        pass
+    if gpio.input(3) == gpio.HIGH:
+        print("button pressed")
     time.sleep(0.2)
 
 def main():
@@ -28,6 +27,7 @@ def main():
 try:
     gpio.setmode(gpio.BCM)
     gpio.setup(4,gpio.IN,pull_up_down=gpio.PUD_DOWN)
+    gpio.setup(3,gpio.IN,pull_up_down=gpio.PUD_DOWN)
     if __name__ == "__main__":
         main()
 finally:
