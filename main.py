@@ -6,11 +6,12 @@ import numpy as np
 import time
 import argparse
 import sys
+import os
 
 version = "0.1.0"
 
-SAMPLE_RATE = 16000
-DURATION = 5
+FS = 500
+DURATION = 3
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--just-version",action="store_true")
@@ -21,7 +22,7 @@ if args.just_version:
 try:
     temp , recording = read("lastsaved.wav")
 except FileNotFoundError:
-    samplerate = 16000; fs = 100
+    samplerate = 16000; fs = 500
     t = np.linspace(0., 1., samplerate)
     amplitude = np.iinfo(np.int16).max
     data = amplitude * np.sin(2. * np.pi * fs * t)
@@ -32,20 +33,25 @@ print(type(recording),type(temp))
 
 def record():
     global recording
-    recording = sounddevice.rec(int(DURATION*SAMPLE_RATE),samplerate=SAMPLE_RATE)
+    recording = sounddevice.rec(int(DURATION*16000),samplerate=16000,channels=2)
     sounddevice.wait()
-    write("lastsaved.wav",SAMPLE_RATE,recording)
+    os.remove("lastsaved.wav")
+    write("lastsaved.wav",16000,recording)
 
 def play():
     global recording
-    sounddevice.play(recording)
+    sounddevice.play(recording,samplerate=16000)
     sounddevice.wait()
 
 def mainloop():
+    print(f"play: {gpio.input(4)} | record: {gpio.input(17)}")
     if gpio.input(4) == gpio.HIGH:
         play()
-    if gpio.input(3) == gpio.HIGH:
-        record() 
+        print("playing audio")
+    if gpio.input(17) == gpio.HIGH:
+        print("started recording")
+        record()
+        print("recording finished")
     time.sleep(0.2)
 
 def main():
@@ -55,7 +61,7 @@ def main():
 try:
     gpio.setmode(gpio.BCM)
     gpio.setup(4,gpio.IN,pull_up_down=gpio.PUD_DOWN)
-    gpio.setup(3,gpio.IN)
+    gpio.setup(17,gpio.IN)
     if __name__ == "__main__":
         main()
 finally:
