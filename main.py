@@ -30,7 +30,7 @@ except FileNotFoundError:
     temp , recording1 = read("lastsaved1.wav")
 
 try:
-    temp , recording1 = read("lastsaved2.wav")
+    temp , recording2 = read("lastsaved2.wav")
 except FileNotFoundError:
     samplerate = 16000; fs = 500
     t = np.linspace(0., 1., samplerate)
@@ -55,10 +55,10 @@ def play1():
 
 def record2():
     global recording2
-    recording = sounddevice.rec(int(DURATION*16000),samplerate=16000,channels=2)
+    recording2 = sounddevice.rec(int(DURATION*16000),samplerate=16000,channels=2)
     sounddevice.wait()
     os.remove("lastsaved2.wav")
-    write("lastsaved2.wav",16000,recording)
+    write("lastsaved2.wav",16000,recording2)
 
 def play2():
     global recording2
