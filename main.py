@@ -8,7 +8,7 @@ import argparse
 import sys
 import os
 
-version = "0.1.0"
+version = "1.0.0"
 
 FS = 500
 DURATION = 3
